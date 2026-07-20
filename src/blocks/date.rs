@@ -1,11 +1,21 @@
 use chrono::Local;
+use std::sync::mpsc::Sender;
 use std::thread::sleep;
 use std::time::Duration;
 
-pub fn run() {
+use crate::blocks::BlockUpdate;
+
+pub fn run(block_id: usize, sender: Sender<BlockUpdate>) {
     loop {
         let now = Local::now();
-        println!("{}", now.format("%Y-%m-%d %H:%M:%S"));
+
+        match sender.send(BlockUpdate::new(
+            block_id,
+            &format!("{}", now.format("%Y-%m-%d %H:%M:%S")),
+        )) {
+            Ok(()) => (),
+            Err(_) => todo!("handle error"),
+        };
 
         let nanos = now.timestamp_subsec_nanos();
         sleep(Duration::from_nanos((1_000_000_000 - nanos) as u64));
