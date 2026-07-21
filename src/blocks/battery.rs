@@ -60,6 +60,6 @@ pub fn run(block_id: usize, sender: Sender<BlockUpdate>) {
             Err(_) => todo!("handle error"),
         };
 
-        sleep(Duration::from_secs(1));
+        sleep(Duration::from_secs(5));
     }
 }
