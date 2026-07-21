@@ -10,6 +10,7 @@ fn main() {
     let (sender, receiver) = channel::<blocks::BlockUpdate>();
 
     let mut blocks: Vec<fn(usize, Sender<BlockUpdate>)> = Vec::new();
+    blocks.push(blocks::battery::run);
     blocks.push(blocks::date::run);
 
     for (i, block) in blocks.into_iter().enumerate() {
