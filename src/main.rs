@@ -1,10 +1,12 @@
 mod blocks;
+mod protocol;
 mod utils;
 
 use std::sync::mpsc::{channel, Sender};
 use std::thread;
 
 use crate::blocks::BlockUpdate;
+use crate::protocol::format_blocks_text;
 
 fn main() {
     let (sender, receiver) = channel::<BlockUpdate>();
@@ -13,14 +15,26 @@ fn main() {
     blocks_run.push(blocks::battery::run);
     blocks_run.push(blocks::clock::run);
 
-    for (i, block) in blocks.into_iter().enumerate() {
+    let mut blocks_text: Vec<String> = Vec::new();
+
+    for (i, block) in blocks_run.into_iter().enumerate() {
         let sender = sender.clone();
         thread::spawn(move || block(i, sender));
+        blocks_text.push(String::from(""));
     }
 
+    // Start displaying
+    println!("{{\"version\":1}}");
+    println!("[");
+
+    // Display blocks
     while let Ok(block_update) = receiver.recv() {
-        println!("{}", block_update.full_text());
+        blocks_text[block_update.block_id()] = String::from(block_update.full_text());
+        println!("{}", format_blocks_text(&blocks_text));
     }
 
-    println!("shutting down");
+    // Stop displaying
+    println!("]");
+
+    eprintln!("shutting down");
 }
