@@ -7,11 +7,11 @@ use std::thread;
 use crate::blocks::BlockUpdate;
 
 fn main() {
-    let (sender, receiver) = channel::<blocks::BlockUpdate>();
+    let (sender, receiver) = channel::<BlockUpdate>();
 
-    let mut blocks: Vec<fn(usize, Sender<BlockUpdate>)> = Vec::new();
-    blocks.push(blocks::battery::run);
-    blocks.push(blocks::date::run);
+    let mut blocks_run: Vec<fn(usize, Sender<BlockUpdate>)> = Vec::new();
+    blocks_run.push(blocks::battery::run);
+    blocks_run.push(blocks::clock::run);
 
     for (i, block) in blocks.into_iter().enumerate() {
         let sender = sender.clone();

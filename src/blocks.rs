@@ -1,5 +1,5 @@
 pub mod battery;
-pub mod date;
+pub mod clock;
 
 pub struct BlockUpdate {
     block_id: usize,
