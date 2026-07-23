@@ -1,5 +1,3 @@
-use crate::blocks::BlockUpdate;
-
 pub fn format_blocks_text(blocks_text: &Vec<String>) -> String {
     let mut out = String::from("[");
     for (i, block_text) in blocks_text.iter().enumerate() {
