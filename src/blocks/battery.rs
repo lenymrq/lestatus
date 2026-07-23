@@ -8,6 +8,7 @@ use std::time::Duration;
 use crate::blocks::BlockUpdate;
 use crate::utils::get_device_dir;
 
+const DEFAULT_INTERVAL: u64 = 5;
 const POWER_SUPPLY_DEVICES_DIR: &str = "/sys/class/power_supply";
 
 struct Battery {
@@ -60,6 +61,6 @@ pub fn run(block_id: usize, sender: Sender<BlockUpdate>) {
             Err(_) => todo!("handle error"),
         };
 
-        sleep(Duration::from_secs(5));
+        sleep(Duration::from_secs(DEFAULT_INTERVAL));
     }
 }
