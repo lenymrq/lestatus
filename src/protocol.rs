@@ -9,3 +9,5 @@ pub fn format_blocks_text(blocks_text: &Vec<String>) -> String {
     out.push_str("],");
     return out;
 }
+
+// TODO: use serde_json with a list of serializable structs or something like that i guess
