@@ -1,6 +1,6 @@
-pub mod battery;
 pub mod clock;
 pub mod net;
+pub mod power_supply;
 pub mod utils;
 
 pub struct BlockUpdate {
