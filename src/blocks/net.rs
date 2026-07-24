@@ -2,7 +2,7 @@ use std::sync::mpsc::Sender;
 use std::thread::sleep;
 use std::time::Duration;
 
-use crate::blocks::utils::SysFs;
+use crate::blocks::sysfs::SysFs;
 use crate::blocks::BlockUpdate;
 use crate::utils::get_device_dir;
 
@@ -37,9 +37,9 @@ pub fn run(block_id: usize, sender: Sender<BlockUpdate>) {
 
             let full_text: String;
             if operstate == "down" || speed == "-1" {
-                full_text = format!("{} {}", iface_name, operstate);
+                full_text = format!("net: {} {}", iface_name, operstate);
             } else {
-                full_text = format!("{} {} ({})", iface_name, operstate, speed);
+                full_text = format!("net: {} {} ({})", iface_name, operstate, speed);
             }
 
             if sender.send(BlockUpdate::new(block_id, &full_text)).is_err() {

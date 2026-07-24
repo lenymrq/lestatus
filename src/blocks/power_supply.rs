@@ -2,7 +2,7 @@ use std::sync::mpsc::Sender;
 use std::thread::sleep;
 use std::time::Duration;
 
-use crate::blocks::utils::SysFs;
+use crate::blocks::sysfs::SysFs;
 use crate::blocks::BlockUpdate;
 use crate::utils::get_device_dir;
 

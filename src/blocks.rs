@@ -1,7 +1,7 @@
 pub mod clock;
 pub mod net;
 pub mod power_supply;
-pub mod utils;
+pub mod sysfs;
 
 pub struct BlockUpdate {
     block_id: usize,
