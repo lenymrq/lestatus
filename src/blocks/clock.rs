@@ -11,12 +11,15 @@ pub fn run(block_id: usize, sender: Sender<BlockUpdate>) {
     loop {
         let now = Local::now();
 
-        match sender.send(BlockUpdate::new(
-            block_id,
-            &format!("{}", now.format("%Y-%m-%d %H:%M:%S")),
-        )) {
-            Ok(()) => (),
-            Err(_) => todo!("handle error"),
+        if sender
+            .send(BlockUpdate::new(
+                block_id,
+                &format!("{}", now.format("%Y-%m-%d %H:%M:%S")),
+            ))
+            .is_err()
+        {
+            eprintln!("clock: could not send block update");
+            break;
         };
 
         let nanos = now.timestamp_subsec_nanos();
