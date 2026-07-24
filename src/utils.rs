@@ -16,7 +16,7 @@ where
             continue;
         };
         if matches(&name) {
-            eprintln!("found {}", entry.path().display());
+            eprintln!("sysfs: found {}", entry.path().display());
             return Ok(Some(entry.path()));
         }
     }
