@@ -14,7 +14,7 @@ fn main() {
     let mut blocks_run: Vec<fn(usize, Sender<BlockUpdate>)> = Vec::new();
 
     blocks_run.push(blocks::net::run);
-    blocks_run.push(blocks::battery::run);
+    blocks_run.push(blocks::power_supply::run);
     blocks_run.push(blocks::clock::run);
 
     let mut blocks_text: Vec<String> = Vec::new();
