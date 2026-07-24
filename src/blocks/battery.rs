@@ -18,23 +18,30 @@ pub fn run(block_id: usize, sender: Sender<BlockUpdate>) {
 
     let battery = SysFs::new(power_supply_path);
 
+    let mut capacity: u8 = 0;
+    let mut status: String = String::from("none");
+
     loop {
-        let capacity = match battery.read_u8("capacity") {
+        let capacity_new = match battery.read_u8("capacity") {
             Ok(value) => value,
             Err(_) => todo!("handle error"),
         };
-        let status = match battery.read_string("status") {
+        let status_new = match battery.read_string("status") {
             Ok(value) => value,
             Err(_) => todo!("handle error"),
         };
 
-        match sender.send(BlockUpdate::new(
-            block_id,
-            &format!("{} {}%", status, capacity),
-        )) {
-            Ok(()) => (),
-            Err(_) => todo!("handle error"),
-        };
+        if capacity_new != capacity || status_new != status {
+            capacity = capacity_new;
+            status = status_new;
+            match sender.send(BlockUpdate::new(
+                block_id,
+                &format!("bat: {} {}%", status, capacity),
+            )) {
+                Ok(()) => (),
+                Err(_) => todo!("handle error"),
+            };
+        }
 
         sleep(Duration::from_secs(DEFAULT_INTERVAL));
     }
