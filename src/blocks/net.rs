@@ -1,7 +1,3 @@
-// files to check
-// - /sys/class/net/<iface>/operstate
-// - /sys/class/net/<iface>/speed
-
 use std::sync::mpsc::Sender;
 use std::thread::sleep;
 use std::time::Duration;
@@ -13,34 +9,42 @@ use crate::utils::get_device_dir;
 const DEFAULT_INTERVAL: u64 = 5;
 
 pub fn run(block_id: usize, sender: Sender<BlockUpdate>) {
-    let iface_path = match get_device_dir("/sys/class/net", |name| name.starts_with("wlan")) {
-        Ok(Some(value)) => value,
-        _ => todo!("handle error"),
+    let Ok(Some(iface_path)) = get_device_dir("/sys/class/net", |name| name.starts_with("wlan"))
+    else {
+        eprintln!("net: could not get net device dir");
+        return;
     };
 
-    // TODO: better way to retrieve iface name
-    let iface = SysFs::new(iface_path.clone());
-    let iface_name = match iface.get_basename() {
-        Ok(value) => value,
-        Err(_) => todo!("handle error"),
-    };
+    let iface = SysFs::new(iface_path);
+    let iface_name = iface.get_basename().unwrap_or("iface");
+
+    let mut operstate: String = String::from("down");
+    let mut speed: String = String::from("-1");
 
     loop {
-        let operstate = match iface.read_string("operstate") {
-            Ok(value) => value,
-            Err(_) => todo!("handle error"),
-        };
-        // let speed = match iface.read_string("speed") {
-        //     Ok(value) => value,
-        //     Err(_) => todo!("handle error"),
-        // };
+        let operstate_new = iface
+            .read_string("operstate")
+            .ok()
+            .map_or(String::from("down"), |s| s.trim().to_owned());
+        let speed_new = iface
+            .read_string("speed")
+            .ok()
+            .map_or(String::from("-1"), |s| s.trim().to_owned());
 
-        match sender.send(BlockUpdate::new(
-            block_id,
-            &format!("{} {}", iface_name, operstate),
-        )) {
-            Ok(()) => (),
-            Err(_) => todo!("handle error"),
+        if operstate_new != operstate || speed_new != speed {
+            operstate = operstate_new;
+            speed = speed_new;
+
+            let full_text: String;
+            if operstate == "down" || speed == "-1" {
+                full_text = format!("{} {}", iface_name, operstate);
+            } else {
+                full_text = format!("{} {} ({})", iface_name, operstate, speed);
+            }
+
+            if sender.send(BlockUpdate::new(block_id, &full_text)).is_err() {
+                break;
+            }
         }
 
         sleep(Duration::from_secs(DEFAULT_INTERVAL));
