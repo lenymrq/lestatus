@@ -1,3 +1,5 @@
 - backlight
 - net
 - volume
+- send block updates only on block change
+- handle and display errors correctly
